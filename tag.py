@@ -12,7 +12,7 @@ class Tag():
         self.ToT = 0.
         self.h = 0.
         self.state = 0
-        filename = "logs/" + str(datetime.datetime.now()) + self.ID + ".txt"
+        filename = "logs/" + str(datetime.datetime.now()) + "_" + self.ID + ".txt"
         filename = filename.replace(" ", "_")
         filename = filename.replace(":", "_")
         filename = filename.replace("-", "_")
@@ -24,8 +24,8 @@ class Tag():
             flag = self.coords_calc(config)
             if flag:
                 # coords output
+                self.file.write(str(self.x) + " " + str(self.y) + " " + str(self.ToT) + "\n")
                 print("Tag " + self.ID + ", x: " + str(self.x) + " m, y: " + str(self.y) + " m")
-                pass
             self.measurements = []
         self.measurements.append(mes)
 
@@ -51,15 +51,9 @@ class Tag():
             try:
                 b, X = cl.solver_pd(SatPos, PD, self.h, Init, config)
                 if b:
-                    self.file.write(str(X[0, 0]) + " " + str(X[1, 0]) + " " + str(X[2, 0]/config.c) + "\n")
                     self.x = X[0, 0]
                     self.y = X[1, 0]
-                    self.ToT = X[2, 0]
+                    self.ToT = X[2, 0]/config.c
                     return True
             except:
-                #print("ERROR1")
-                pass
-            else:
-                #print("ERROR")
-                pass
-            return 1
+                return False

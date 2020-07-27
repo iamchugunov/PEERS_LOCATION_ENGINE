@@ -131,3 +131,4 @@ def process_BLINK(mes, config):
         tag = Tag(mes)
         tag.add_meas(mes, config)
         config.tags.append(tag)
+        print("NEW TAG HAS BEEN FOUND, ID: " + str(tag.ID))

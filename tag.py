@@ -12,7 +12,7 @@ class Tag():
         self.ToT = 0.
         self.h = 0.
         self.state = 0
-        filename = ((str(datetime.datetime.now())).rstrip() + (self.ID).rstrip()).rstrip() + ".txt"
+        filename = "logs/" + str(datetime.datetime.now()) + self.ID + ".txt"
         filename = filename.replace(" ", "_")
         filename = filename.replace(":", "_")
         filename = filename.replace("-", "_")
@@ -24,7 +24,7 @@ class Tag():
             flag = self.coords_calc(config)
             if flag:
                 # coords output
-                print("Tag " + self.ID + ", x: " + str(self.x) + " m, y: " + str(self.y))
+                print("Tag " + self.ID + ", x: " + str(self.x) + " m, y: " + str(self.y) + " m")
                 pass
             self.measurements = []
         self.measurements.append(mes)

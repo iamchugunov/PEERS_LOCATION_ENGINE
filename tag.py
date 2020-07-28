@@ -55,5 +55,7 @@ class Tag():
                     self.y = X[1, 0]
                     self.ToT = X[2, 0]/config.c
                     return True
+                else:
+                    return False
             except:
                 return False

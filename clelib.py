@@ -31,13 +31,14 @@ def solver_pd(SatPos, PD, h, Init, config):
 
         if (np.linalg.norm(X - X_prev) < 0.001) or (k > 8):
             break
-
+    invHH = np.linalg.inv(H.transpose().dot(H))
+    DOP = np.sqrt(invHH[0, 0] * invHH[0, 0] + invHH[1, 1] * invHH[1, 1])
     if (np.linalg.norm(X - X_prev) < 1) and (np.sqrt(pow(X[0, 0], 2) + pow(X[1, 0], 2)) < config.zone):
         b = True
     else:
         b = False
 
-    return b, X
+    return b, X, DOP
 
 # TDOA TAG'S POSITION ESTIMATION USING LEAST SQUARE METHOD
 
@@ -63,6 +64,7 @@ def solver_rd(SatPos, RD, h, Init):
 
         if (np.linalg.norm(X - X_prev) < 0.001) or (k > 8):
             break
+
     return X
 
 # SYNCHRONIZATION ALGORITHM USING LINEAR KALMAN FILTER

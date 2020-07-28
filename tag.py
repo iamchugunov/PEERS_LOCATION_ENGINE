@@ -11,6 +11,7 @@ class Tag():
         self.y = 3.
         self.ToT = 0.
         self.h = 0.
+        self.DOP = 1.
         self.state = 0
         filename = "logs/" + str(datetime.datetime.now()) + "_" + self.ID + ".txt"
         filename = filename.replace(" ", "_")
@@ -24,8 +25,8 @@ class Tag():
             flag = self.coords_calc(config)
             if flag:
                 # coords output
-                self.file.write(str(self.x) + " " + str(self.y) + " " + str(self.ToT) + "\n")
-                print("Tag " + self.ID + ", x: " + str(self.x) + " m, y: " + str(self.y) + " m")
+                self.file.write(str(datetime.datetime.now().timestamp()) + " " + str(self.x) + " " + str(self.y) + " " + str(self.ToT) + " " + str(self.DOP) + " " + str(len(self.measurements)) + "\n")
+                print("Tag " + self.ID + ", x: " + str(self.x) + " m, y: " + str(self.y) + " m ")
             self.measurements = []
         self.measurements.append(mes)
 
@@ -49,11 +50,12 @@ class Tag():
             Init[1, 0] = self.y
             Init[2, 0] = PD[0][0]
             try:
-                b, X = cl.solver_pd(SatPos, PD, self.h, Init, config)
+                b, X, DOP = cl.solver_pd(SatPos, PD, self.h, Init, config)
                 if b:
                     self.x = X[0, 0]
                     self.y = X[1, 0]
                     self.ToT = X[2, 0]/config.c
+                    self.DOP = DOP
                     return True
                 else:
                     return False

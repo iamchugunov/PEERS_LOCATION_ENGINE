@@ -5,7 +5,7 @@ from tag import Tag
 
 # PSEUDORANGE (TOA) TAG'S POSITION ESTIMATION USING LEAST SQUARE METHOD
 
-def solver_pd(SatPos, PD, h, Init, config):
+def solver_pd_2D(SatPos, PD, h, Init, config):
     N = PD.size
 
 #    y = np.zeros((N+1,1))
@@ -24,6 +24,42 @@ def solver_pd(SatPos, PD, h, Init, config):
             H[j, 1] = (X[1, 0] - SatPos[1, j]) / D
             H[j, 2] = 1.
             Y[j, 0] = D + X[2,0]
+
+        X_prev = X
+        X = X + ((np.linalg.inv(H.transpose().dot(H))).dot(H.transpose())).dot(y-Y)
+        k = k + 1
+
+        if (np.linalg.norm(X - X_prev) < 0.001) or (k > 8):
+            break
+    invHH = np.linalg.inv(H.transpose().dot(H))
+    DOP = np.sqrt(invHH[0, 0] * invHH[0, 0] + invHH[1, 1] * invHH[1, 1])
+    if (np.linalg.norm(X - X_prev) < 1) and (np.sqrt(pow(X[0, 0], 2) + pow(X[1, 0], 2)) < config.zone):
+        b = True
+    else:
+        b = False
+
+    return b, X, DOP
+
+def solver_pd_3D(SatPos, PD, h, Init, config):
+    N = PD.size
+
+#    y = np.zeros((N+1,1))
+#    for i in range(N):
+#        y[i,0] = PD[i,0]
+#    y[N] = h
+    y = PD
+    X = Init
+    k = 0
+    while True:
+        H = np.zeros((N,4))
+        Y = np.zeros((N,1))
+        for j in range(N):
+            D = np.sqrt(pow(SatPos[0,j] - X[0,0], 2) + pow(SatPos[1,j] - X[1,0], 2) + pow(SatPos[2,j] - X[2,0], 2))
+            H[j, 0] = (X[0, 0] - SatPos[0, j]) / D
+            H[j, 1] = (X[1, 0] - SatPos[1, j]) / D
+            H[j, 2] = (X[2, 0] - SatPos[2, j]) / D
+            H[j, 3] = 1.
+            Y[j, 0] = D + X[3,0]
 
         X_prev = X
         X = X + ((np.linalg.inv(H.transpose().dot(H))).dot(H.transpose())).dot(y-Y)
@@ -130,7 +166,7 @@ def process_BLINK(mes, config):
             match_flag = 1
 
     if match_flag == 0:
-        tag = Tag(mes)
+        tag = Tag(mes, config)
         tag.add_meas(mes, config)
         config.tags.append(tag)
         print("NEW TAG HAS BEEN FOUND, ID: " + str(tag.ID))

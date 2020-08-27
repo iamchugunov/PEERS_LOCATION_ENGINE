@@ -14,6 +14,7 @@ f = open(filename, 'r')
 # load settings
 config = Config()
 
+
 #processing
 for line in f:
     mes = Message(line)
@@ -27,5 +28,6 @@ for line in f:
 
 # closing files
 f.close()
+config.f.close()
 for tag in config.tags:
     tag.file.close()

@@ -2,16 +2,31 @@ function [ d ] = process_one_folder( folder )
 if nargin == 0
 folder = uigetdir;
 end
+
+mode = 'ttk';
+
 S = split(folder);
 TruePos = [str2num(S{2});str2num(S{3});str2num(S{4}) - 1];
 files = dir(folder);
-for i = 1:length(files)
-    if contains(files(i).name,'CCtag')
-        break;
-    end
+
+switch mode
+    case 'ttk'
+        for i = 1:length(files)
+            if contains(files(i).name,'CCtag')
+                break;
+            end
+        end
+        filename = fullfile(folder,files(i).name);
+        out = cctagreader2(filename);
+    case 'my'
+        for i = 1:length(files)
+            if contains(files(i).name,'ALL')
+                break;
+            end
+        end
+        filename = fullfile(folder,files(i).name);
+        out = ALLreader(filename);
 end
-filename = fullfile(folder,files(i).name);
-out = cctagreader2(filename);
 for i = 1:length(out)
     for j = 51:length(out(i).coord)
         d(i).data(j-50) = norm(out(i).coord(:,j-50) - TruePos);

@@ -6,6 +6,7 @@ import numpy as np
 from config import Config
 from message import Message
 
+
 # browsing log file in explorer and opening it
 Tk().withdraw()
 filename = askopenfilename()

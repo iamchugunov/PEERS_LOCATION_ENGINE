@@ -16,8 +16,8 @@ def solver_pd_2D(SatPos, PD, h, Init, config):
     X = Init
     k = 0
     while True:
-        H = np.zeros((N,3))
-        Y = np.zeros((N,1))
+        H = np.zeros((N, 3))
+        Y = np.zeros((N, 1))
         for j in range(N):
             D = np.sqrt(pow(SatPos[0,j] - X[0,0], 2) + pow(SatPos[1,j] - X[1,0], 2) + pow(SatPos[2,j] - h, 2))
             H[j, 0] = (X[0, 0] - SatPos[0, j]) / D
@@ -120,7 +120,13 @@ def CS_filter(X, Dx, dt, t_M, t_S, R):
     K = (D_ext.dot(H.transpose()))/((H.dot(D_ext)).dot(H.transpose()) + Dn)
     Dx = D_ext - (K.dot(H)).dot(D_ext)
     X = x_ext + K.dot(y - H.dot(x_ext))
-    return X, Dx
+    nev = y - H.dot(x_ext)
+    if abs(nev) < 3*np.sqrt(Dx[0][0]):
+        b = 1
+    else:
+        b = 0
+
+    return b, X, Dx, nev
 
 # MESSAGE PROCESSING FUNCTIONS
 
@@ -151,12 +157,23 @@ def process_CS(mes, config):
                 dt = config.anchors[0].T_rec - anchor.T_tx
                 if dt < 0:
                     dt = dt + config.T_max
-                anchor.X, anchor.Dx = CS_filter(anchor.X, anchor.Dx, dt, config.anchors[0].T_rec, anchor.T_rec, anchor.Range)
-                anchor.T_tx = config.anchors[0].T_rec
+                b, X, Dx, nev = CS_filter(anchor.X, anchor.Dx, dt, config.anchors[0].T_rec, anchor.T_rec, anchor.Range)
+                if b:
+                    anchor.k_skip = 0
+                    anchor.X = X
+                    anchor.Dx = Dx
+                    #config.f.write(str(anchor.number) + " " + str(nev) + "\n")
+                    anchor.T_tx = config.anchors[0].T_rec
+                else:
+                    anchor.k_skip = anchor.k_skip + 1
+                    if anchor.k_skip == 5:
+                        anchor.sync_flag = 0
+                    #config.f.write(str(anchor.number) + " " + str(0.) + "\n")
             else:
-                anchor.X = np.array([[anchor.T_rec - config.anchors[0].T_rec - anchor.Range], [0.0]])
-                anchor.sync_flag = 1
-                anchor.T_tx = config.anchors[0].T_rec
+                #anchor.X = np.array([[anchor.T_rec - config.anchors[0].T_rec - anchor.Range], [0.0]])
+                #anchor.sync_flag = 0
+                #anchor.T_tx = config.anchors[0].T_rec
+                anchor.add_meas(config, config.anchors[0].T_rec, anchor.T_rec)
 
 def process_BLINK(mes, config):
     match_flag = 0

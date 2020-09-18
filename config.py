@@ -20,9 +20,9 @@ class Config():
         # max zone
         self.zone = 1000.
         # heigh of tags in 2D
-        self.hei = 0.
+        self.hei = 1
         # log-file of all tags
-        filename = "logs/" + str(datetime.datetime.now()) + "_"  + "ALL.txt"
+        filename = "logs/" + str(datetime.datetime.now()) + "_" + "ALL.txt"
         filename = filename.replace(" ", "_")
         filename = filename.replace(":", "_")
         filename = filename.replace("-", "_")

@@ -21,18 +21,21 @@ class Tag():
 
     def add_meas(self, mes, config):
         if mes.SN != self.SN:
-            print(self.ID + " " + str(self.SN) + " " + str(len(self.measurements)))
             self.SN = mes.SN
             if config.mode == 0:
                 flag = self.coords_calc_2D(config)
             if config.mode == 1:
                 flag = self.coords_calc_3D(config)
-            print(flag)
             if flag:
                 # coords output
-                self.file.write(str(datetime.datetime.now().timestamp()) + " " + str(self.x) + " " + str(self.y) + " " + str(self.ToT) + " " + str(self.DOP) + " " + str(len(self.measurements)) + "\n")
+                s = str(datetime.datetime.now().timestamp()) + " " + str(self.x) + " " + str(self.y) + " "
+                s = s + str(len(self.measurements))
+                for meas in self.measurements:
+                    s = s + " " + str(meas.Anchor) + " " + str(meas.TimeStamp)
+                s = s + "\n"
+                self.file.write(s)
                 config.f.write(self.ID + " " + str(self.x) + " " + str(self.y) + " " + str(self.h) + "\n")
-                #print("Tag " + self.ID + ", x: " + str(self.x) + " m, y: " + str(self.y) + " m ")
+                print("Tag " + self.ID + ", x: " + str(self.x) + " m, y: " + str(self.y) + " m ")
             self.measurements = []
         self.measurements.append(mes)
 
@@ -50,6 +53,7 @@ class Tag():
                         SatPos[1][i] = anchor.y
                         SatPos[2][i] = anchor.z
                         PD[i][0] = Sat.TimeStamp - (anchor.X[0] + anchor.X[1]*(Sat.TimeStamp - anchor.T_rec))
+                        Sat.TimeStamp = PD[i][0]
             PD = PD * config.c
             Init = np.zeros((3, 1))
             Init[0, 0] = self.x

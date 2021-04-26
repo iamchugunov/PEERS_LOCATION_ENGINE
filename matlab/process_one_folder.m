@@ -27,8 +27,11 @@ switch mode
         filename = fullfile(folder,files(i).name);
         out = ALLreader(filename);
 end
-% for i = 1:length(out)
-for i = 1:6
+for i = 1:length(out)
+figure(1)
+plot(TruePos(1),TruePos(2),'xk','linewidth',2)
+plot(out(1).coord(1,:),out(1).coord(2,:),'.')
+for i = 1:1
     d(i).data = [];
     for j = 1:size(out(i).coord,2)
         d(i).data(j) = norm(out(i).coord(:,j) - TruePos);
@@ -38,7 +41,7 @@ for i = 1:6
     d(i).p1m = NaN;
     d(i).r95 = NaN;
     if ~isnan(d(i).data)
-        d(i).data(find(d(i).data > 6)) = [];
+        d(i).data(find(d(i).data > 2)) = [];
     end
     
     if length(d(i).data) > 120
@@ -52,7 +55,6 @@ for i = 1:6
     
         
 end
-
 
 
 end

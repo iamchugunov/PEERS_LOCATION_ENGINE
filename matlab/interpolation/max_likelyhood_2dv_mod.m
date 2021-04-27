@@ -1,22 +1,23 @@
-function [X, R, nev] = max_likelyhood_2dv(y, config, X0)
+function [X, R, nev] = max_likelyhood_2dv_mod(y, config, X0)
     addpath("deriv_func")   
     N = size(y,2);
 %     t0 = min(min(y));
-    t0 = max(y(:,1)) - 1;
-%     t0 = 0;
+%     t0 = max(y(:,1)) - 1;
+    t0 = 0;
     
-    X = zeros(4 + N,1);
+    X = zeros(5 + N,1);
     X(1:4) = X0([1 2 4 5]);
+    X(5) = 0;
     h = X0(7);
-    X(5:end) = max(y);
+    X(6:end) = max(y);
     
 %     dpdX = zeros(9 + N, 1);
 %     dp2d2X = zeros(9 + N, 9 + N);
     
     k = 0;
     while 1
-        dpdX = zeros(4 + N, 1);
-        dp2d2X = zeros(4+ N, 4 + N);
+        dpdX = zeros(5 + N, 1);
+        dp2d2X = zeros(5+ N, 5 + N);
         for j = 1:N
             for i = 1:size(y,1)
                 if y(i,j) > 0
@@ -79,8 +80,8 @@ function [X, R, nev] = max_likelyhood_2dv(y, config, X0)
         X_prev = X;
 %         plot(X(1),X(3),'v')
         X = X - inv(dp2d2X) * dpdX;
-        k = k + 1;
-        nev(1,k) = norm(X - X_prev);
+        k = k + 1
+        nev(1,k) = norm(X - X_prev)
         nev(2,k) = norm(X(1:4) - X_prev(1:4));
         if norm(X - X_prev) < 0.05 || k > 10
             R = dp2d2X;
@@ -107,6 +108,8 @@ function [X, R, nev] = max_likelyhood_2dv(y, config, X0)
     
     
 end
+
+
 
 
 

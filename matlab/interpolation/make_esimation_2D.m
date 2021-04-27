@@ -20,6 +20,11 @@ function [X, Xf] = make_esimation_2D(toa_ns, config, T)
             break
         end
         
+        nums = find(toa_ns(:,k) < 0);
+        if ~isempty(nums)
+            toa_ns(nums,k) = toa_ns(nums,k) + T_max * 1e9;
+        end
+        
         t_k = max(toa_ns(:,k)) * 1e-9;
         if t_k - t0 < 0
             t_k = t_k + T_max;
@@ -30,7 +35,12 @@ function [X, Xf] = make_esimation_2D(toa_ns, config, T)
         else
             k = k + 1;
             t = t + 1;
+%             nums = find(y(:,1));
+%             xx = coord_solver2D(y(nums,1)*config.c, config.PostsENU(:,nums), [X0(1);X0(4);max(y(:,1))*config.c], 1);
+%             X0(1) = xx(1);
+%             X0(4) = xx(2);
             [X1, R, nev] = max_likelyhood_2dv(y, config, X0);
+%             X0 = X1;
             X(:,t) = X1(1:9);
             d4 = inv(-R);
             D4 = [d4(1,1); d4(2,2); d4(3,3); d4(4,4); d4(5,5); d4(6,6); d4(7,7); d4(8,8); d4(9,9)];
@@ -42,6 +52,8 @@ function [X, Xf] = make_esimation_2D(toa_ns, config, T)
             else
                 [Xf(:,t), D_x] = Kalman_step_3D(X(:,t), Xf(:,t-1), D_x, T, D_n, D_ksi);
             end
+            X0(1) = Xf(1,t) + Xf(2,t) * T;
+            X0(4) = Xf(4,t) + Xf(5,t) * T;
             
             try
                 t0 = max(toa_ns(:,k)) * 1e-9;

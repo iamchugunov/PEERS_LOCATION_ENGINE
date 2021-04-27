@@ -28,7 +28,7 @@ while 1
     
     if (nev < epsilon) || (iter > max_iter) 
         
-        if nev > 1e8 || norm(X(1:2)) > 3.e5
+        if nev > 10 || norm(X(1:2)) > 1.e4
             flag = 0;
             dop = 0;
             nev = norm(y - Y);

@@ -37,7 +37,7 @@ function [X, Xf] = make_esimation_2D(toa_ns, config, T)
             
             xx = [];
             flag = [];
-            for j = 1:length(y)
+            for j = 1:size(y,2)
                 [xx(:,j) dop, nev, flag(j)] = coord_solver2D(y(:,j)*config.c, config.PostsENU, [5;5;max(y(:,1))*config.c], 1);
             end
             nums = find(flag);
@@ -52,8 +52,8 @@ function [X, Xf] = make_esimation_2D(toa_ns, config, T)
             XA = approx1(xx(1:2,:),TT);
             
             X0(1:6) = XA;
-%             [X1, R, nev] = max_likelyhood_3Da(y, config, X0);
-            [X1, R, nev] = max_likelyhood_2dv(y, config, X0);
+            [X1, R, nev] = max_likelyhood_3Da(y, config, X0);
+%             [X1, R, nev] = max_likelyhood_2dv(y, config, X0);
 %             X0 = X1;
 
             

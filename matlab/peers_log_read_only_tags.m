@@ -17,10 +17,10 @@ function [tags] = peers_log_read_only_tags(filename)
         figure
         avatar_size = 0.7;
         set(gcf, 'Position', get(0, 'Screensize'));
-        img = imread('map1.png');
+        img = imread('map.png');
         % Flip the image upside down before showing it
-        imagesc([0 12.6], [0 12.6], flipud(img));
-%         imagesc([0 13], [0 6], flipud(img));
+%         imagesc([0 12.6], [0 12.6], flipud(img));
+        imagesc([0 13], [0 6], flipud(img));
         set(gca,'ydir','normal');
         % NOTE: if your image is RGB, you should use flipdim(img, 1) instead of flipud.
  
@@ -30,7 +30,7 @@ function [tags] = peers_log_read_only_tags(filename)
         grid on
         hold on
         daspect([1 1 1])
-        axis([-2 14 -2 14])
+        axis([-2 14 -2 6])
         pause(delay)
     end
     
@@ -68,7 +68,7 @@ function [tags] = peers_log_read_only_tags(filename)
                    tags(i).coords(:,tags(i).count) = [time;x;y;z];
                    tags(i).meas(:,tags(i).count) = toa;
                    
-                   if std(tags(i).meas(1:4,end) - tags(i).meas(1:4,end-1)) < 1e-5 && x > 0 && y > 0 && x < 12 && y < 12 %&& norm(tags(i).pos(2:3,end) - [x;y]) < 1
+                   if std(tags(i).meas(1:4,end) - tags(i).meas(1:4,end-1)) < 1e-5 && x > 0 && y > 0 && x < 13 && y < 13 %&& norm(tags(i).pos(2:3,end) - [x;y]) < 1
                        
                        tags(i).fcount = tags(i).fcount + 1;
                        tags(i).pos(:,tags(i).fcount) = [time;x;y;z]; 
@@ -81,7 +81,7 @@ function [tags] = peers_log_read_only_tags(filename)
                                Y = median(tags(i).pos(3,end-tail:end));
                                set(tags(i).p,'XData',tags(i).pos(2,end-tail:end),'YData',tags(i).pos(3,end-tail:end));
                                set(tags(i).t,'Position',[tags(i).pos(2,end) tags(i).pos(3,end) 0] );
-%                                set(tags(i).img,'XData',[tags(i).pos(2,end) - avatar_size/2 tags(i).pos(2,end) + avatar_size/2], 'YData', [tags(i).pos(3,end) - avatar_size/2 tags(i).pos(3,end) + avatar_size/2])
+                               set(tags(i).img,'XData',[tags(i).pos(2,end) - avatar_size/2 tags(i).pos(2,end) + avatar_size/2], 'YData', [tags(i).pos(3,end) - avatar_size/2 tags(i).pos(3,end) + avatar_size/2])
                                title(num2str(time-time0))
                                pause(delay)
                            end
@@ -113,9 +113,9 @@ function [tags] = peers_log_read_only_tags(filename)
                            otherwise
                                ph1 = 'photo/Никто.png';
                        end
-%                        img = imread(ph1);
-%                        tag.img = imagesc([tag.pos(2,1) - avatar_size/2 tag.pos(2,1) + avatar_size/2], [tag.pos(3,1) - avatar_size/2 tag.pos(3,1) + avatar_size/2], flipud(img));
-%                        set(gca,'ydir','normal');
+                       img = imread(ph1);
+                       tag.img = imagesc([tag.pos(2,1) - avatar_size/2 tag.pos(2,1) + avatar_size/2], [tag.pos(3,1) - avatar_size/2 tag.pos(3,1) + avatar_size/2], flipud(img));
+                       set(gca,'ydir','normal');
                        pause(delay)
                    end
                    
